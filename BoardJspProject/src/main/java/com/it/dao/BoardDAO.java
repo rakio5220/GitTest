@@ -263,4 +263,45 @@ public class BoardDAO {
 		
 		return chk;
 	}
+	
+	public boolean boardDelete(int no, String pwd) {
+		boolean chk = false;
+		
+		try {
+			//1.연결
+			getConnection();
+			
+			//2.sql문장
+			String sql = "select pwd from jspBoard where no = ?";
+			
+			//3. 전송
+			ps = conn.prepareStatement(sql);
+			
+			//4.빈칸채우기
+			ps.setInt(1, no);
+			
+			//5.실행
+			ResultSet rs = ps.executeQuery();
+			String chk_pwd="";
+			if(rs.next()) {
+				chk_pwd = rs.getString(1);
+				rs.close();
+			}
+			
+			if(chk_pwd.equals(pwd)) {
+				chk = true;
+				
+				sql = "delete from jspBoard where no=?";
+				ps = conn.prepareStatement(sql);
+				ps.setInt(1, no);
+				ps.executeUpdate();
+			}
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			disConnection();
+		}
+		
+		return chk;
+	}
 }
